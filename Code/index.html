@@ -5,6 +5,7 @@
     <title>Norim plateformer E.M</title>
     <script src="phaser.js"></script>
     <script src="MenuJeu.js"></script>
+    <script src="Options.js"></script>
     <script src="Level1.js"></script>
     <style type="text/css">
         body {
@@ -28,10 +29,10 @@ var config = {
         arcade: {
             fps:60,
             gravity: { y: 300 },
-            debug: true
+            debug: false
         }
     },
-    scene: [MenuJeu, Level1]
+    scene: [MenuJeu, Options, Level1]
     /*scene: {
         preload: preload,
         create: create,

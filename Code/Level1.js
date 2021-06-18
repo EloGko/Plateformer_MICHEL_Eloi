@@ -10,7 +10,6 @@ var fireball;
 var bounceCount = 0;
 var direction = false;
 var fireballActive = false;
-var keySpace;
 var pv = 3;
 var heat = 1;
 var TextPV;
@@ -28,6 +27,7 @@ var cdCameleon = 300; // 600
 var cdSerpent = 185;   // 455
 var cdHarpie = 200;  // 400
 var bombActive = false;
+var luminosite = 3;
 
 
 
@@ -59,6 +59,8 @@ class Level1 extends Phaser.Scene{
         this.load.spritesheet("harpie", 'assets/Spritesheet_Harpie.png', { frameWidth:120, frameHeight: 121,});
         this.load.spritesheet("serpent", 'assets/Spritesheet_Serpent.png', { frameWidth:100, frameHeight: 98,});
         this.load.spritesheet("cameleon", 'assets/Spritesheet_Cameleon.png', { frameWidth:130, frameHeight: 110,});
+
+        this.load.spritesheet("Dark", 'assets/Spritesheet_Dark.png', { frameWidth:896, frameHeight: 448,});
 
         this.load.image('OmbresPremierPlan', 'assets/OmbresPremierPlan.png');
         this.load.image('plante1', 'assets/plante1.png');
@@ -168,6 +170,10 @@ class Level1 extends Phaser.Scene{
         //}
 
 
+        this.Dark = this.physics.add.sprite(448,224, 'Dark').setDepth(10).setScrollFactor(0).setScale(1);
+        this.Dark.body.allowGravity = false;
+
+
 
         /*plante1 = this.add.image(100,224, 'plante1')
         .setScrollFactor(0.9, 0)
@@ -222,6 +228,28 @@ class Level1 extends Phaser.Scene{
 
 
     
+
+        // Luminosite 
+
+        this.anims.create({
+            key: 'Dark1',
+            frames: [ { key: 'Dark', frame: 0 } ],
+            frameRate: 5
+        })
+
+        this.anims.create({
+            key: 'Dark2',
+            frames: [ { key: 'Dark', frame: 1 } ],
+            frameRate: 5
+        })
+
+        this.anims.create({
+            key: 'Dark3',
+            frames: [ { key: 'Dark', frame: 2 } ],
+            frameRate: 5
+        })
+
+
         // Update coeurs
 
         this.anims.create({
@@ -531,12 +559,9 @@ class Level1 extends Phaser.Scene{
 
 
     //  Input Events
-    cursors = this.input.keyboard.addKeys('W,S,A,D,up,down,right,left,SPACE');   //this.input.keyboard.createCursorKeys();
-    keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    cursors = this.input.keyboard.addKeys('Z,Q,S,D,up,down,right,left,P');
+    const keyP = Phaser.Input.Keyboard.JustDown(cursors.P);
     
-    
-    //cursors = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
-    //cursors2 = this.input.keyboard.addKeys('A,Z,S,Q,D,T,space');
 
     
 
@@ -608,6 +633,24 @@ class Level1 extends Phaser.Scene{
 
     update ()
     {
+
+
+        if (luminosite === 3)
+        {
+            this.Dark.anims.play('Dark1',true);
+        }
+
+        if (luminosite === 2)
+        {
+            this.Dark.anims.play('Dark2',true);
+        }
+
+        if (luminosite === 1)
+        {
+            this.Dark.anims.play('Dark3',true);
+        }
+
+    
     if (gameOver)
     {
         if (heat >= 6 )
@@ -901,7 +944,7 @@ class Level1 extends Phaser.Scene{
     }
     
 
-    if (cursors.left.isDown)
+    if (cursors.left.isDown || cursors.Q.isDown)
     {
         if(airborn === false & animBlock === false)
         {
@@ -912,7 +955,7 @@ class Level1 extends Phaser.Scene{
 
         direction = true;
     }
-    else if (cursors.right.isDown)
+    else if (cursors.right.isDown || cursors.D.isDown)
     {
         if(airborn === false & animBlock === false)
         {
@@ -943,9 +986,12 @@ class Level1 extends Phaser.Scene{
         airborn = false;
     }
 
+    if (cursors.P.isDown)
+    {
+        this.scene.start("MenuJeu");
+    }
 
-
-    if (cursors.up.isDown && player.body.blocked.down)
+    if (cursors.up.isDown && player.body.blocked.down || cursors.Z.isDown && player.body.blocked.down)
     {
         animBlock = true;
         timedEvent3 = this.time.delayedCall(600, timerAnimBlock, [], this);
@@ -967,7 +1013,7 @@ class Level1 extends Phaser.Scene{
         timedEvent2 = this.time.delayedCall(600, timerDoubleJump, [], this);
     }
 
-    if (cursors.up.isDown && doubleJump === true)
+    if (cursors.up.isDown && doubleJump === true || cursors.Z.isDown && doubleJump === true)
     {
         doubleJump = false;
         airborn = true;
@@ -987,7 +1033,7 @@ class Level1 extends Phaser.Scene{
         player.setVelocityY(-250);
     }
 
-    if (cursors.down.isDown && fireballActive === false)
+    if (cursors.down.isDown && fireballActive === false || cursors.S.isDown && fireballActive === false)
     {
         animBlock = true;
         timedEvent3 = this.time.delayedCall(300, timerAnimBlock, [], this);
