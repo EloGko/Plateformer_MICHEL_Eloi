@@ -1,0 +1,48 @@
+<!doctype html> 
+<html lang="fr"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Norim plateformer E.M</title>
+    <script src="phaser.js"></script>
+    <script src="MenuJeu.js"></script>
+    <script src="Level1.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+
+
+var config = {
+    type: Phaser.AUTO,
+    width: 896,
+    height: 448,
+    backgroundColor: '#538192',
+    physics: {
+        default: 'arcade',
+        arcade: {
+            fps:60,
+            gravity: { y: 300 },
+            debug: true
+        }
+    },
+    scene: [MenuJeu, Level1]
+    /*scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }*/
+};
+
+var game = new Phaser.Game(config);
+
+
+</script>
+
+</body>
+</html>
