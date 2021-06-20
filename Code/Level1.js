@@ -43,8 +43,15 @@ class Level1 extends Phaser.Scene{
  
     preload ()
     {
-        this.load.image('tiles', 'assets/Spritesheet_Mario.png');
-        this.load.tilemapTiledJSON('map', 'assets/tile_mob_coin_eau.json');
+        //this.load.image('tiles', 'assets/Spritesheet_Mario.png');
+        //this.load.tilemapTiledJSON('map', 'assets/tile_mob_coin_eau2.json');
+
+
+        this.load.image('tiles', 'assets/assets_decors.png');
+        this.load.tilemapTiledJSON('map', 'assets/tileLevel1.json');
+
+
+
 
         this.load.spritesheet('coin', 'assets/Spritesheet_Piece.png', { frameWidth: 32 , frameHeight: 32 });
         this.load.image('bomb', 'assets/bomb.png');
@@ -82,7 +89,10 @@ class Level1 extends Phaser.Scene{
         this.load.image('acidG3', 'assets/acidG3.png');
 
         this.load.spritesheet("eau", 'assets/Spritesheet_Eau.png', { frameWidth:32, frameHeight: 32,});
+        this.load.image('racinesGauche', 'assets/racinesGauche.png');
+        this.load.image('racinesDroite', 'assets/racinesDroite.png');
     }
+
 
 
 
@@ -92,14 +102,20 @@ class Level1 extends Phaser.Scene{
 
     create ()
     {
-
         const map = this.make.tilemap({ key: 'map' });
-        const tileset = map.addTilesetImage('mario','tiles');
+        const tileset = map.addTilesetImage('tileset','tiles');
 
-        map.createLayer('fond', tileset, -0, -0);
+        var secondPlan = map.createLayer('fond', tileset, 0, 0);
+        secondPlan.setDepth(1);
+
+        var arrierePlan = map.createLayer('fond2', tileset, 0, 0);
+        arrierePlan.setDepth(0);
+
+        var premierPlan = map.createLayer('1erplan', tileset, 0, 0);
+        premierPlan.setDepth(4);
+
         const wallLayer = map.createLayer('wall', tileset, 0, 0);
         wallLayer.setDepth(3)
-
         wallLayer.setCollisionByExclusion(-1, true);
 
 
@@ -108,9 +124,10 @@ class Level1 extends Phaser.Scene{
 
         for (const harpie of harpieLocation) {
         this.harpies.create(harpie.x, harpie.y, 'harpie')
-            .setDepth(1)
+            .setDepth(4)
             .setScale(1)
             .setSize(100, 110)
+            .setPushable(false)
         }
         //for (const harpie of harpies.children.entries) {
         //    harpie.isDed = false;
@@ -121,10 +138,11 @@ class Level1 extends Phaser.Scene{
 
         for (const serpent of serpentLocation) {
         this.serpents.create(serpent.x, serpent.y, 'serpent')
-            .setDepth(1)
+            .setDepth(-1)
             .setScale(1)
             .setSize(40, 100)
-            .setOffset(40, 0);
+            .setOffset(40, 0)
+            .setPushable(false)
         }
         //for (const serpent of serpents.children.entries) {
         //    serpent.isDed = false;
@@ -138,7 +156,8 @@ class Level1 extends Phaser.Scene{
             .setDepth(1)
             .setScale(1)
             .setSize(60, 65)
-            .setOffset(25, 30);
+            .setOffset(25, 30)
+            .setPushable(false)
         }
         //for (const cameleon of cameleons.children.entries) {
         //    cameleon.isDed = false;
@@ -162,12 +181,33 @@ class Level1 extends Phaser.Scene{
 
         for (const eau of eauLocation) {
         this.eaus.create(eau.x, eau.y, 'eau')
-            .setDepth(2)
+            .setDepth(0)
             .setScale(1)
+            .setPushable(false)
         }
         //for (const eau of eaus.children.entries) {
             //eau.isDed = false;
         //}
+
+        var racinesGaucheLocation = map.getObjectLayer('racinesGauche').objects;
+        this.racinesGauches = this.physics.add.group({allowGravity:false});
+
+        for (const racinesGauche of racinesGaucheLocation) {
+        this.racinesGauches.create(racinesGauche.x, racinesGauche.y, 'racinesGauche')
+            .setDepth(0)
+            .setScale(1)
+            .setPushable(false)
+        }
+
+        var racinesDroiteLocation = map.getObjectLayer('racinesDroite').objects;
+        this.racinesDroites = this.physics.add.group({allowGravity:false});
+
+        for (const racinesDroite of racinesDroiteLocation) {
+        this.racinesDroites.create(racinesDroite.x, racinesDroite.y, 'racinesDroite')
+            //.setDepth(2)
+            .setScale(1)
+            .setPushable(false)
+        }
 
 
         this.Dark = this.physics.add.sprite(448,224, 'Dark').setDepth(10).setScrollFactor(0).setScale(1);
@@ -221,10 +261,11 @@ class Level1 extends Phaser.Scene{
         .setScale(1);
         this.compteur.body.allowGravity = false;
 
-        player = this.physics.add.sprite(800, 100, 'dude');
+        player = this.physics.add.sprite(300, 1100, 'dude');
         player.setSize(40, 64,)
         player.setOffset(5, 8);
         player.setBounce(0);
+        player.setDepth(1)
 
 
     
@@ -602,6 +643,8 @@ class Level1 extends Phaser.Scene{
     this.physics.add.overlap(player, this.harpies, hitMob, null, this);
     this.physics.add.overlap(player, this.serpents, hitMob, null, this);
     this.physics.add.overlap(player, this.cameleons, hitMob, null, this);
+    this.physics.add.collider(player, this.racinesGauches, hitMob, null, this);
+    this.physics.add.collider(player, this.racinesDroites, hitMob, null, this);
 
     this.physics.add.overlap(player, this.eaus, hitEau, null, this);
 
@@ -609,6 +652,8 @@ class Level1 extends Phaser.Scene{
     this.physics.add.overlap(fireballs, this.harpies, hitFireball, null, this);
     this.physics.add.overlap(fireballs, this.serpents, hitFireball, null, this);
     this.physics.add.overlap(fireballs, this.cameleons, hitFireballCameleon, null, this);
+    this.physics.add.overlap(fireballs, this.racinesGauches, hitFireball, null, this);
+    this.physics.add.overlap(fireballs, this.racinesDroites, hitFireball, null, this);
     this.physics.add.collider(fireballs, wallLayer, hitwalls, null, this);
 
     this.cameras.main.startFollow(player);
@@ -657,7 +702,15 @@ class Level1 extends Phaser.Scene{
         {
             player.setTint(0x0000FF);
         }
-        return;
+        pieces = 0;
+        gameOver = false;
+        bounceCount = 0;
+        pv = 3;
+        heat = 1;
+        invincibility = false;
+        invincibilityEau = false;
+        bombActive = false;
+        this.scene.start("Level1");
     }
 
 
@@ -689,6 +742,16 @@ class Level1 extends Phaser.Scene{
             harpie.setVelocityX(100);
             harpie.setFlipX(true);
         }
+
+        if (harpie.x < player.x & harpie.y+1000 < player.y)
+        {
+            harpie.destroy();
+        }
+
+        if (harpie.x+1000 < player.x)
+        {
+            harpie.destroy();
+        }
     }
 
     
@@ -712,46 +775,46 @@ class Level1 extends Phaser.Scene{
                     var bomb4 = bombs.create(serpent.x,serpent.y+40,'acidD1');
                     bomb4.setVelocityX(randomX);
                     bomb4.setVelocityY(randomY);
-                    bomb4.setScale(5);
+                    bomb4.setScale(3);
                 }
                 if (i === 1)
                 {
                     var bomb5 = bombs.create(serpent.x,serpent.y+40,'acidD2');
                     bomb5.setVelocityX(randomX);
                     bomb5.setVelocityY(randomY);
-                    bomb5.setScale(5);
+                    bomb5.setScale(3);
                 }
                 if (i === 2)
                 {
                     var bomb6 = bombs.create(serpent.x,serpent.y+40,'acidD3');
                     bomb6.setVelocityX(randomX);
                     bomb6.setVelocityY(randomY);
-                    bomb6.setScale(5);
+                    bomb6.setScale(3);
                 }
                 if (i === 3)
                 {
                     var bomb7 = bombs.create(serpent.x,serpent.y+40,'acidG1');
                     bomb7.setVelocityX(randomX);
                     bomb7.setVelocityY(randomY);
-                    bomb7.setScale(5);
+                    bomb7.setScale(3);
                 }
                 if (i === 4)
                 {
                     var bomb8 = bombs.create(serpent.x,serpent.y+40,'acidG2');
                     bomb8.setVelocityX(randomX);
                     bomb8.setVelocityY(randomY);
-                    bomb8.setScale(5);
+                    bomb8.setScale(3);
                 }
                 if (i === 5)
                 {
                     var bomb9 = bombs.create(serpent.x,serpent.y+40,'acidG3');
                     bomb9.setVelocityX(randomX);
                     bomb9.setVelocityY(randomY);
-                    bomb9.setScale(5);
+                    bomb9.setScale(3);
                 }
             }
         }
-        if (serpent.x+800 < player.x)
+        if (serpent.x+1000 < player.x || serpent.y+1000 < player.y)
         {
             serpent.destroy();
         }
@@ -801,7 +864,7 @@ class Level1 extends Phaser.Scene{
             bombActive = false;
         }
 
-        if (cameleon.x+200 < player.x)
+        if (cameleon.x+1800 < player.x /*|| cameleon.y+1000 < player.y*/)
         {
             cameleon.destroy();
             //bomb1.destroy();

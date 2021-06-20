@@ -17,6 +17,7 @@ class Options extends Phaser.Scene {
         this.load.image('Bouton_Back','assets/Bouton_Back.png');
         this.load.image('Fond','assets/Menu_Fond.png');
         this.load.image('Feuilles','assets/Menu_Feuille.png');
+        this.load.image('ControlsInfos','assets/Controls_Infos.png');
 
         this.load.spritesheet("BarBrightness", 'assets/Spritesheet_Bar_Brightness.png', { frameWidth:600, frameHeight: 228,});
         this.load.spritesheet("Dark", 'assets/Spritesheet_Dark.png', { frameWidth:896, frameHeight: 448,});
@@ -25,6 +26,7 @@ class Options extends Phaser.Scene {
     create() {
         this.add.image(448,224, 'Fond').setScrollFactor(0).setDepth(1);
         this.add.image(448,224, 'Feuilles').setScrollFactor(0).setDepth(3);
+        
 
         this.BarBrightness = this.physics.add.sprite(448,131, 'BarBrightness').setDepth(2).setScrollFactor(0).setScale(1);
         this.BarBrightness.body.allowGravity = false;
@@ -39,6 +41,8 @@ class Options extends Phaser.Scene {
         var buttonPlus = this.add.sprite(671, 132, '+').setScrollFactor(0).setDepth(2).setInteractive({ cursor: 'pointer' });
         var buttonMinus = this.add.sprite(214, 138, '-').setScrollFactor(0).setDepth(2).setInteractive({ cursor: 'pointer' });
 
+        var ControlsInfos = this.add.sprite(448,131, 'ControlsInfos').setScrollFactor(0).setDepth(2).setAlpha(0);
+
 
 
 
@@ -49,6 +53,7 @@ class Options extends Phaser.Scene {
             buttonMinus.setAlpha(1);
             buttonPlus.setAlpha(1);
             this.BarBrightness.setAlpha(1);
+            ControlsInfos.setAlpha(0);
 
         }, this);
 
@@ -59,6 +64,7 @@ class Options extends Phaser.Scene {
             buttonMinus.setAlpha(0);
             buttonPlus.setAlpha(0);
             this.BarBrightness.setAlpha(0);
+            ControlsInfos.setAlpha(1);
 
         }, this);
 

@@ -89,3 +89,10 @@ class MenuJeu extends Phaser.Scene {
 
 
 }
+
+/*function render() {
+
+    //  FPS debug info
+    game.debug.text('FPS: ' + game.time.fps || 'FPS: --', 40, 40, "#00ff00");
+
+}*/
