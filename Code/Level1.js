@@ -5,6 +5,7 @@ var cursors;
 var cursors2;
 var pieces = 0;
 var gameOver = false;
+var victoire = false;
 var fireballs;
 var fireball;
 var bounceCount = 0;
@@ -12,22 +13,23 @@ var direction = false;
 var fireballActive = false;
 var pv = 3;
 var heat = 1;
-var TextPV;
 var invincibility = false;
 var invincibilityEau = false;
 var timedEvent1;
 var timedEvent2;
 var timedEvent3;
 var timedEvent4;
+var timedEvent5;
+var timedEvent6;
 var doubleJump = true;
-var animMobs = true;
 var airborn = false;
 var animBlock = false;
-var cdCameleon = 300; // 600
+var cdCameleon = 300;  // 600
 var cdSerpent = 185;   // 455
-var cdHarpie = 200;  // 400
+var cdHarpie = 200;    // 400
 var bombActive = false;
 var luminosite = 3;
+// var pause = false;
 
 
 
@@ -36,21 +38,34 @@ class Level1 extends Phaser.Scene{
     constructor(){
         super("Level1");
     }
+    
     init(data){
-        
+        pieces = 0;
+        gameOver = false;
+        victoire = false;
+        bounceCount = 0;
+        pv = 3;
+        heat = 1;
+        invincibility = false;
+        invincibilityEau = false;
+        bombActive = false;
+        fireballActive = false;
+        animBlock = false;
+        direction = false;
+        airborn = true;
+        doubleJump = true;
+        // pause = false;
+        cdCameleon = 300; // 600
+        cdSerpent = 185;   // 455
+        cdHarpie = 200;  // 400
     }
 
  
     preload ()
     {
-        //this.load.image('tiles', 'assets/Spritesheet_Mario.png');
-        //this.load.tilemapTiledJSON('map', 'assets/tile_mob_coin_eau2.json');
-
 
         this.load.image('tiles', 'assets/assets_decors.png');
         this.load.tilemapTiledJSON('map', 'assets/tileLevel1.json');
-
-
 
 
         this.load.spritesheet('coin', 'assets/Spritesheet_Piece.png', { frameWidth: 32 , frameHeight: 32 });
@@ -91,6 +106,9 @@ class Level1 extends Phaser.Scene{
         this.load.spritesheet("eau", 'assets/Spritesheet_Eau.png', { frameWidth:32, frameHeight: 32,});
         this.load.image('racinesGauche', 'assets/racinesGauche.png');
         this.load.image('racinesDroite', 'assets/racinesDroite.png');
+
+        this.load.image('mort', 'assets/Mort.png');
+        this.load.image('victoire', 'assets/Victoire.png');
     }
 
 
@@ -209,6 +227,14 @@ class Level1 extends Phaser.Scene{
             .setPushable(false)
         }
 
+        var victoireLocation = map.getObjectLayer('victoire').objects;
+        this.victoires = this.physics.add.group({ Immovable:true, allowGravity:false});
+
+        for (const victoire of victoireLocation) {
+        this.victoires.create(victoire.x, victoire.y, 'vide')
+            .setScale(1)
+        }
+
 
         this.Dark = this.physics.add.sprite(448,224, 'Dark').setDepth(10).setScrollFactor(0).setScale(1);
         this.Dark.body.allowGravity = false;
@@ -231,6 +257,18 @@ class Level1 extends Phaser.Scene{
         .setScrollFactor(0.4, 0)
         plante8 = this.add.image(300,224, 'plante8')
         .setScrollFactor(0.8, 0)*/
+
+
+        this.victoire = this.add.image(448,224, 'victoire')
+        .setScrollFactor(0)
+        .setDepth(10)
+        .setAlpha(0)
+
+        this.mort = this.add.image(448,224, 'mort')
+        .setScrollFactor(0)
+        .setDepth(10)
+        .setAlpha(0)
+
 
         this.OmbresPremierPlan = this.add.image(448,224, 'OmbresPremierPlan')
         .setScrollFactor(0)
@@ -596,38 +634,17 @@ class Level1 extends Phaser.Scene{
     
 
 
-
-
-
-    //  Input Events
     cursors = this.input.keyboard.addKeys('Z,Q,S,D,up,down,right,left,P');
-    const keyP = Phaser.Input.Keyboard.JustDown(cursors.P);
     
 
-    
 
 
     fireballs = this.physics.add.group();
 
-    /*coins = this.physics.add.group({
-        key: 'Spritesheet_Piece', frame: 0,
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 70 }
-    });
 
-    coins.children.iterate(function (child) {
-
-        child.setBounceY(Phaser.Math.FloatBetween(0.1, 0.3));
-        
-    });*/
-
-   
 
     bombs = this.physics.add.group({allowGravity:false});
     
-    //var bomb = bombs.create(1505, 200, 'bomb');
-    //var bomb2 = bombs.create(1617, 200, 'bomb');
-
     
 
     ///////////////  Colliders  ///////////////
@@ -655,6 +672,8 @@ class Level1 extends Phaser.Scene{
     this.physics.add.overlap(fireballs, this.racinesGauches, hitFireball, null, this);
     this.physics.add.overlap(fireballs, this.racinesDroites, hitFireball, null, this);
     this.physics.add.collider(fireballs, wallLayer, hitwalls, null, this);
+
+    this.physics.add.overlap(player, this.victoires, gagner, null, this);
 
     this.cameras.main.startFollow(player);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -702,15 +721,14 @@ class Level1 extends Phaser.Scene{
         {
             player.setTint(0x0000FF);
         }
-        pieces = 0;
-        gameOver = false;
-        bounceCount = 0;
-        pv = 3;
-        heat = 1;
-        invincibility = false;
-        invincibilityEau = false;
-        bombActive = false;
-        this.scene.start("Level1");
+        this.mort.setAlpha(1);
+        timedEvent5 = this.time.delayedCall(1000, timerMort, [], this);
+    }
+
+    if (victoire)
+    {
+        this.victoire.setAlpha(1);
+        timedEvent6 = this.time.delayedCall(2000, timerVictoire, [], this);
     }
 
 
@@ -814,10 +832,10 @@ class Level1 extends Phaser.Scene{
                 }
             }
         }
-        if (serpent.x+1000 < player.x || serpent.y+1000 < player.y)
-        {
-            serpent.destroy();
-        }
+        // if (serpent.x+1000 < player.x || serpent.y+1000 < player.y) )
+        // {
+        //     serpent.destroy();
+        // }
     }
 
 
@@ -1049,10 +1067,28 @@ class Level1 extends Phaser.Scene{
         airborn = false;
     }
 
+    // if (cursors.P.isDown)
+    // {
+    //     if (pause === true)
+    //     {
+    //         pause = false;
+    //         this.scene.resume("Level1");
+    //         this.victoire.setAlpha(0);
+    //     }
+    //     else (pause === false)
+    //     {
+    //         pause = true;
+    //         this.victoire.setAlpha(1);
+    //         this.scene.pause("Level1");
+    //     }
+    // }
+
     if (cursors.P.isDown)
     {
-        this.scene.start("MenuJeu");
+        this.scene.pause("Level1");
+        this.scene.start("OptionsGame");
     }
+
 
     if (cursors.up.isDown && player.body.blocked.down || cursors.Z.isDown && player.body.blocked.down)
     {
@@ -1096,7 +1132,7 @@ class Level1 extends Phaser.Scene{
         player.setVelocityY(-250);
     }
 
-    if (cursors.down.isDown && fireballActive === false || cursors.S.isDown && fireballActive === false)
+    if ( (cursors.down.isDown && fireballActive === false) || (cursors.S.isDown && fireballActive === false) )
     {
         animBlock = true;
         timedEvent3 = this.time.delayedCall(300, timerAnimBlock, [], this);
@@ -1216,21 +1252,21 @@ function playerHitFireball(player, fireball)
         fireball.destroy();
         fireballActive = false;
         bounceCount = 0;
-      
+
         pv -= 1;
 
         heat -= 2;
-            
-        player.setTint(0xff8888);
-            
-        invincibility = true;
         
+        player.setTint(0xff8888);
+        
+        invincibility = true;
+    
         if ( pv > 0)
         {
             timedEvent1 = this.time.delayedCall(1500, timerInvincibility, [], this);
         }
         
-    
+
         if ( pv == 0)
         {
             this.hearts.anims.play('0coeur',true);
@@ -1248,10 +1284,9 @@ function playerHitFireball(player, fireball)
             
             player.setTint(0xaa0000);
             
-            gameOver = true;
+            gameOver = true;   
         }
     }
-
 }
 
 function hitwalls(fireball,wallLayer)
@@ -1327,6 +1362,11 @@ function hitMob (player, Mob)
 
 
 
+function gagner()
+{
+    victoire = true;
+}
+
 function timerDoubleJump()
 {
     doubleJump = true;
@@ -1357,4 +1397,14 @@ function timerInvincibilityEau ()
 function timerAnimBlock()
 {
     animBlock = false;
+}
+
+function timerMort()
+{
+    this.scene.start("Level1");
+}
+
+function timerVictoire()
+{
+    this.scene.start("MenuJeu");
 }
