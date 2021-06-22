@@ -5,7 +5,7 @@ Les commandes sont simples :
 Déplacez-vous à l'aide des flèches directionnelles ou à l'aide des touches Q et D,
 Sautez avec la flèche du haut ou avec la touche Z,
 Vous pouvez lancer une boule de feu avec la flèche du bas ou avec la touche S,
-La touche P devait permettre de mettre le jeu en pause et d'accéder aux réglages mais pour l'instant elle vous renvoie au menu d'option, donc attetion car cela annulera votre progression actuelle dans le niveau.
+La touche P devait permettre de mettre le jeu en pause et d'accéder aux réglages mais pour l'instant elle vous renvoie au menu d'option, donc attention car cela annulera votre progression actuelle dans le niveau.
 
 Quelques informations à savoir :
 
