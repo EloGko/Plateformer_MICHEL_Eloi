@@ -9,7 +9,7 @@ La touche P devait permettre de mettre le jeu en pause et d'accéder aux réglag
 
 Quelques informations à savoir :
 
-Les boules de feu que vous lancez peuvent tuer les ennemis que vous croiserez, vous permettre de vous frayer un chemin, mais elles peuvent aussi vous blesser donc soyez prudent. En contrepartit si vous recevez une de vos boules de feu, elle rechargera un peu votre bar de chaleur.
+Les boules de feu que vous lancez peuvent tuer les ennemis que vous croiserez, vous permettre de vous frayer un chemin, mais elles peuvent aussi vous blesser donc soyez prudent. En contrepartie si vous recevez une de vos boules de feu, elle rechargera un peu votre bar de chaleur.
 Attention : vous ne pouvez lancer qu'une seule boule de feu à la fois.
 
 Votre bar de chaleur agis un peu comme vos points de vies mais elle ne descend que si votre personnage est en contact avec de l'eau. Veillez à ne pas la faire descendre trop bas ou vous mourrez.
